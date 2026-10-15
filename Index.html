@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusCart</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f5fb;
+    color: #222;
+}
+
+header {
+    background: #35246b;
+    color: white;
+    padding: 24px 16px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+}
+
+header p {
+    margin: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+}
+
+input, select, button {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+.search {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.filters select {
+    flex: 1;
+    min-width: 140px;
+}
+
+button {
+    background: #6246c7;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #4932a1;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 4px 14px #00000012;
+}
+
+.emoji {
+    font-size: 40px;
+}
+
+.price {
+    font-size: 22px;
+    font-weight: bold;
+    color: #35246b;
+}
+
+.badge {
+    background: #e7e0ff;
+    color: #35246b;
+    padding: 5px 9px;
+    border-radius: 15px;
+    font-size: 12px;
+}
+
+section {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    background: #35246b;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🛒 CampusCart</h1>
+    <p>Your Campus Marketplace</p>
+    <p>Buy • Sell • Exchange</p>
+</header>
+
+<div class="container">
+
+<section>
+    <h2>🔎 Find Products</h2>
+    <input
+        class="search"
+        id="search"
+        placeholder="Search books, electronics, notes..."
+        oninput="renderProducts()">
+
+    <div class="filters">
+        <select id="category" onchange="renderProducts()">
+            <option value="All">All Categories</option>
+            <option value="Books">Books</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Notes">Notes</option>
+            <option value="Cycles">Cycles</option>
+        </select>
+    </div>
+</section>
+
+<section>
+    <h2>➕ Sell Your Product</h2>
+
+    <input id="name" placeholder="Product name">
+    <br><br>
+
+    <input id="price" type="number" placeholder="Price in ₹">
+    <br><br>
+
+    <select id="newCategory">
+        <option value="Books">Books</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Notes">Notes</option>
+        <option value="Cycles">Cycles</option>
+    </select>
+    <br><br>
+
+    <input id="seller" placeholder="Seller name">
+    <br><br>
+
+    <button onclick="addProduct()">Publish Listing</button>
+    <p id="message"></p>
+</section>
+
+<section>
+    <h2>⭐ Available Products</h2>
+    <div class="products" id="products"></div>
+</section>
+
+<section>
+    <h2>🔐 Escrow Simulation</h2>
+    <p>
+        CampusCart demonstrates an escrow-style order status.
+        This is a simulation, not a real payment service.
+    </p>
+    <p id="escrow">No order selected.</p>
+</section>
+
+</div>
+
+<footer>
+    <p>CampusCart © 2026</p>
+    <p>Made for Students ❤️</p>
+</footer>
+
+<script>
+let products = [
+    {
+        name: "Engineering Mathematics",
+        price: 250,
+        category: "Books",
+        seller: "Rahul",
+        emoji: "📚"
+    },
+    {
+        name: "Wireless Headphones",
+        price: 700,
+        category: "Electronics",
+        seller: "Amit",
+        emoji: "🎧"
+    },
+    {
+        name: "Java Programming Notes",
+        price: 100,
+        category: "Notes",
+        seller: "Priya",
+        emoji: "📝"
+    },
+    {
+        name: "Student Bicycle",
+        price: 1800,
+        category: "Cycles",
+        seller: "Neha",
+        emoji: "🚲"
+    }
+];
+
+function renderProducts() {
+    const search = document
+        .getElementById("search")
+        .value.toLowerCase();
+
+    const category = document
+        .getElementById("category").value;
+
+    const list = products.filter(p =>
+        p.name.toLowerCase().includes(search) &&
+        (category === "All" || p.category === category)
+    );
+
+    const container = document.getElementById("products");
+    container.innerHTML = "";
+
+    if (list.length === 0) {
+        container.innerHTML = "<p>No products found.</p>";
+        return;
+    }
+
+    list.forEach((p, index) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const emoji = document.createElement("div");
+        emoji.className = "emoji";
+        emoji.textContent = p.emoji || "📦";
+
+        const title = document.createElement("h3");
+        title.textContent = p.name;
+
+        const price = document.createElement("p");
+        price.className = "price";
+        price.textContent = "₹" + p.price;
+
+        const categoryLabel = document.createElement("p");
+        categoryLabel.innerHTML =
+            '<span class="badge"></span>';
+        categoryLabel.firstChild.textContent = p.category;
+
+        const seller = document.createElement("p");
+        seller.textContent = "Seller: " + p.seller;
+
+        const button = document.createElement("button");
+        button.textContent = "Buy Now";
+        button.onclick = () => buyProduct(p);
+
+        card.append(emoji, title, price, categoryLabel, seller, button);
+        container.appendChild(card);
+    });
+}
+
+function addProduct() {
+    const name = document.getElementById("name").value.trim();
+    const price = Number(document.getElementById("price").value);
+    const category = document.getElementById("newCategory").value;
+    const seller = document.getElementById("seller").value.trim();
+
+    if (!name || !seller || !Number.isFinite(price) || price <= 0) {
+        document.getElementById("message").textContent =
+            "Please enter a product name, valid price and seller name.";
+        return;
+    }
+
+    const emojis = {
+        Books: "📚",
+        Electronics: "🎧",
+        Notes: "📝",
+        Cycles: "🚲"
+    };
+
+    products.push({
+        name,
+        price,
+        category,
+        seller,
+        emoji: emojis[category]
+    });
+
+    document.getElementById("name").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("seller").value = "";
+
+    document.getElementById("message").textContent =
+        "Listing added successfully!";
+
+    renderProducts();
+}
+
+function buyProduct(product) {
+    document.getElementById("escrow").textContent =
+        "Order: " + product.name +
+        " | Amount: ₹" + product.price +
+        " | Status: Order created — payment simulation only.";
+}
+
+renderProducts();
+</script>
+
+</body>
+</html>
